@@ -1,0 +1,28 @@
+@host = http://localhost:5102
+
+### 1. History, first page
+GET {{host}}/api/accounts/1/transactions?pageSize=10
+
+### 1. History, next page (use nextBeforeDate / nextBeforeId from the previous response)
+GET {{host}}/api/accounts/1/transactions?pageSize=10&beforeDate=2026-10-01T00:00:00&beforeId=100000
+
+### 2. Customer overview - one SQL statement, check the console
+GET {{host}}/api/customers/1/overview
+
+### 3. Monthly volume, LINQ
+GET {{host}}/api/reports/monthly-volume/2026
+
+### 3b. Monthly volume, raw SQL
+GET {{host}}/api/reports/monthly-volume/2026/sql
+
+### 4. Top spenders, last 30 days
+GET {{host}}/api/reports/top-customers?top=10
+
+### 5. Compiled query
+GET {{host}}/api/accounts/lookup/1000000005
+
+### 6. Split query
+GET {{host}}/api/customers/by-state/Lagos?take=5
+
+### 7. Bulk update
+POST {{host}}/api/maintenance/fail-stale-pending?olderThanHours=24

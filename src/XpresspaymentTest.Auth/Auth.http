@@ -1,0 +1,48 @@
+@host = http://localhost:5101
+
+### Register a customer
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Ada",
+  "lastName": "Obi",
+  "email": "ada@example.com",
+  "password": "Password123"
+}
+
+### Login as the customer
+# @name customerLogin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ada@example.com",
+  "password": "Password123"
+}
+
+### Login as the seeded admin
+# @name adminLogin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@xpresstest.local",
+  "password": "Admin@12345"
+}
+
+### Any logged in user
+GET {{host}}/api/profile
+Authorization: Bearer {{customerLogin.response.body.accessToken}}
+
+### Customer only - works for Ada, 403 for admin
+GET {{host}}/api/profile/wallet
+Authorization: Bearer {{customerLogin.response.body.accessToken}}
+
+### Back office only - 403 for a customer
+GET {{host}}/api/admin/users
+Authorization: Bearer {{customerLogin.response.body.accessToken}}
+
+### Same call as admin
+GET {{host}}/api/admin/users
+Authorization: Bearer {{adminLogin.response.body.accessToken}}

@@ -1,0 +1,70 @@
+@payments = http://localhost:5106
+@wallet = http://localhost:5105
+@adaWallet = 8f6c2a4e-1b3d-4c5e-9a7b-0d1e2f3a4b5c
+@tundeWallet = 2b7d9e1f-3c4a-4e6b-8d0f-1a2b3c4d5e6f
+
+### Pay from Ada's wallet (50,000 NGN) -> 201
+POST {{payments}}/api/payments
+Content-Type: application/json
+
+{
+  "reference": "ORD-100234",
+  "walletId": "{{adaWallet}}",
+  "amount": 7500,
+  "currency": "NGN",
+  "merchantName": "Shoprite Lekki"
+}
+
+### Send the exact same request again -> 200, same payment, wallet not debited twice
+POST {{payments}}/api/payments
+Content-Type: application/json
+
+{
+  "reference": "ORD-100234",
+  "walletId": "{{adaWallet}}",
+  "amount": 7500,
+  "currency": "NGN",
+  "merchantName": "Shoprite Lekki"
+}
+
+### Tunde only has 1,500 -> 422 insufficient_funds
+POST {{payments}}/api/payments
+Content-Type: application/json
+
+{
+  "reference": "ORD-100235",
+  "walletId": "{{tundeWallet}}",
+  "amount": 20000,
+  "currency": "NGN",
+  "merchantName": "Jumia"
+}
+
+### Wrong currency -> 422 currency_mismatch
+POST {{payments}}/api/payments
+Content-Type: application/json
+
+{
+  "reference": "ORD-100236",
+  "walletId": "{{adaWallet}}",
+  "amount": 10,
+  "currency": "USD",
+  "merchantName": "Netflix"
+}
+
+### Validation -> 400
+POST {{payments}}/api/payments
+Content-Type: application/json
+
+{
+  "reference": "x",
+  "amount": -5,
+  "currency": "naira",
+  "merchantName": ""
+}
+
+### Check Ada's balance directly on the wallet service
+GET {{wallet}}/api/wallets/{{adaWallet}}
+X-Api-Key: ops-91c4e7a0d3b8
+
+### Wallet service without a key -> 401
+GET {{wallet}}/api/wallets/{{adaWallet}}

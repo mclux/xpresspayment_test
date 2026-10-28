@@ -1,0 +1,31 @@
+@host = http://localhost:5104
+
+### Request a statement - returns 202 straight away, the job runs in the background
+# @name create
+POST {{host}}/api/statements
+Content-Type: application/json
+
+{
+  "accountNumber": "0123456789",
+  "email": "ada@example.com",
+  "from": "2026-07-01",
+  "to": "2026-09-30"
+}
+
+### Check on it (watch Attempts go up when the fake mail server "fails")
+GET {{host}}/api/statements/{{create.response.body.id}}
+
+### Schedule one for later
+POST {{host}}/api/statements
+Content-Type: application/json
+
+{
+  "accountNumber": "0987654321",
+  "email": "tunde@example.com",
+  "from": "2026-09-01",
+  "to": "2026-09-30",
+  "deliverAt": "2026-10-28T18:00:00+01:00"
+}
+
+### Run the recurring daily report now
+POST {{host}}/api/statements/daily-report/trigger

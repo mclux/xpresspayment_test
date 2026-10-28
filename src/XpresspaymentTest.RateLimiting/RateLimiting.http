@@ -1,0 +1,12 @@
+@host = http://localhost:5103
+
+### No key - limited by IP (5 per minute). Send this 6 times to get a 429
+GET {{host}}/api/exchange-rates
+
+### Basic merchant key (20 per minute)
+GET {{host}}/api/exchange-rates/usd
+X-Api-Key: basic-3f9a1c
+
+### Unknown key -> 401
+GET {{host}}/api/exchange-rates
+X-Api-Key: not-a-real-key
